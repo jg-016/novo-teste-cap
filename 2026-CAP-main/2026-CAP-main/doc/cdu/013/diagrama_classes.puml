@@ -1,0 +1,21 @@
+@startuml cdu_013_classes
+
+skinparam classAttributeIconSize 0
+
+class InicioView <<controle>>
+class InicioTemplate <<visao>>
+class Usuario <<modelo>>
+class Turma <<modelo>>
+class Calendario <<modelo>>
+class Evento <<modelo>>
+
+InicioTemplate --> InicioView : solicita quadro geral
+InicioView --> Usuario : identifica estudante
+InicioView --> Calendario : consulta calendários
+InicioView --> Evento : consulta eventos
+Usuario "1" -- "0..*" Calendario : participa
+Usuario "1" -- "0..*" Turma : participa
+Turma "1" -- "0..*" Calendario : possui
+Calendario "1" -- "0..*" Evento : contém
+
+@enduml

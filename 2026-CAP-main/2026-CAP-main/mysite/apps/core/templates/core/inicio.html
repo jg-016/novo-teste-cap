@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Calendário geral{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/css/inicio.css' %}">
+    <link rel="stylesheet" href="{% static 'eventos/css/modal_criar_evento.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'core/js/inicio.js' %}"></script>
+    <script src="{% static 'eventos/js/evento.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="topo">
+        <h1 class="mes-em-foco">{{ mes_em_foco }} {{ ano_em_foco }}</h1>
+        <a href="{% url 'voltar_para_hoje' %}" class="voltar-para-hoje">Hoje</a>
+        <a href="{% url 'semana_anterior' %}" class="icone-semana-anterior material-symbols-outlined">arrow_back_ios_new</a>
+        <a href="{% url 'proxima_semana' %}" class="icone-proxima-semana material-symbols-outlined">arrow_forward_ios</a>
+    </div>
+
+    <div class="scroll-container">
+        <div class="calendario-geral">
+            <div></div>
+
+            <div class="datas">
+                {% for data in datas_calendario_geral %}
+                    <p>{{ data.nome }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="horarios">
+                {% for horario in horarios_calendario_geral %}
+                    <div>{{ horario }}</div>
+                {% endfor %}
+                <span></span>
+            </div>
+
+            <div class="grade-eventos">
+                <div class="colunas-datas">
+                    {% for data in datas_calendario_geral %}
+                        <div data-data="{{ data.isoformat }}"></div>
+                    {% endfor %}
+                </div>
+
+                <div class="linhas-horizontais">
+                    {% for horario in horarios_calendario_geral %}
+                        <div class="container-linha-horizontal">
+                            <div class="linha-horizontal"></div>
+                        </div>
+                    {% endfor %}
+                    <span class="container-linha-horizontal"></span>
+                </div>
+
+                {% for evento in eventos %}
+                    <div class="evento-calendario"
+                         data-data="{{ evento.inicio|date:'Y-m-d' }}"
+                         data-inicio="{{ evento.inicio|date:'H:i' }}"
+                         data-fim="{{ evento.fim|date:'H:i' }}">
+                        <div class="evento-titulo">{{ evento.nome }}</div>
+                        {% if evento.conteudo %}
+                            <div class="evento-descricao">{{ evento.conteudo }}</div>
+                        {% endif %}
+                        <div class="evento-horario">
+                            {{ evento.inicio|date:'H:i' }} - {{ evento.fim|date:'H:i' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="botao-criar-evento">+ Criar evento</button>
+
+    {% include 'eventos/modal_criar_evento.html' %}
+{% endblock %}

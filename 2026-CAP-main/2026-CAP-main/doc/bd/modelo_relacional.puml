@@ -1,0 +1,88 @@
+@startuml modelo_relacional
+
+hide circle
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor White
+  BorderColor #333333
+}
+
+entity "usuarios_usuario" as usuario {
+  * id : bigint <<PK>>
+  --
+  * email : varchar(254) <<UNIQUE>>
+  * password : varchar(128)
+  * nome_completo : varchar(100)
+  * is_active : boolean
+  * is_staff : boolean
+  * is_superuser : boolean
+  criado_em : datetime
+  alterado_em : datetime
+}
+
+entity "turmas_turma" as turma {
+  * id : bigint <<PK>>
+  --
+  * nome : varchar(100)
+  descricao : varchar(500)
+  * codigo : varchar(6) <<UNIQUE>>
+  criado_em : datetime
+  alterado_em : datetime
+}
+
+entity "calendarios_calendario" as calendario {
+  * id : bigint <<PK>>
+  --
+  * nome : varchar(100)
+  descricao : varchar(500)
+  turma_id : bigint <<FK>>
+  criado_em : datetime
+  alterado_em : datetime
+}
+
+entity "eventos_evento" as evento {
+  * id : bigint <<PK>>
+  --
+  * nome : varchar(100)
+  conteudo : varchar(500)
+  * inicio : datetime
+  * fim : datetime
+  * calendario_id : bigint <<FK>>
+  criado_em : datetime
+  alterado_em : datetime
+}
+
+entity "turmas_membrodeturma" as membro_turma {
+  * id : bigint <<PK>>
+  --
+  * eh_admin : boolean
+  * numero_paleta : integer
+  * usuario_id : bigint <<FK>>
+  * turma_id : bigint <<FK>>
+  criado_em : datetime
+  alterado_em : datetime
+  --
+  UQ usuario_id, turma_id
+}
+
+entity "calendarios_membrodecalendario" as membro_calendario {
+  * id : bigint <<PK>>
+  --
+  * eh_admin : boolean
+  * numero_paleta : integer
+  * usuario_id : bigint <<FK>>
+  * calendario_id : bigint <<FK>>
+  criado_em : datetime
+  alterado_em : datetime
+  --
+  UQ usuario_id, calendario_id
+}
+
+turma ||..o{ calendario : "turma_id"
+calendario ||--o{ evento : "calendario_id"
+usuario ||--o{ membro_turma : "usuario_id"
+turma ||--o{ membro_turma : "turma_id"
+usuario ||--o{ membro_calendario : "usuario_id"
+calendario ||--o{ membro_calendario : "calendario_id"
+
+@enduml

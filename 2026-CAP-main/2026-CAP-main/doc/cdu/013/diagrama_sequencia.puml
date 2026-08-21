@@ -1,0 +1,43 @@
+@startuml cdu_013_sequencia
+
+actor Estudante
+boundary "Calendário geral\n(core/inicio.html)" as Tela
+control "InicioView\ninicio(request)" as Inicio
+control "ContextProcessors\nmenu lateral" as Menu
+entity "Sessão" as Sessao
+database "Evento" as Evento
+database "Calendario" as Calendario
+
+Estudante -> Tela : Acessa calendário geral
+Tela -> Inicio : GET /
+activate Inicio
+Inicio -> Sessao : Obtém dia_em_foco
+Sessao --> Inicio : Data em foco
+Inicio -> Inicio : Calcula os 7 dias da semana
+Inicio -> Evento : Filtra eventos dos calendários\ndo estudante na semana
+Evento --> Inicio : Eventos ordenados por início
+Inicio -> Calendario : Consulta calendários do usuário
+Calendario --> Inicio : Calendários pessoais
+Inicio -> Menu : Solicita dados do menu lateral
+activate Menu
+Menu -> Sessao : Consulta calendários/turmas ocultos
+Sessao --> Menu : Preferências de visibilidade
+Menu -> Calendario : Consulta calendários do usuário
+Calendario --> Menu : Calendários e turmas
+Menu --> Inicio : Dados do menu lateral
+deactivate Menu
+Inicio -> Tela : Renderiza contexto e eventos
+deactivate Inicio
+Tela --> Estudante : Exibe grade semanal e filtros
+
+alt Estudante navega para outra semana
+  Estudante -> Tela : Seleciona semana anterior/próxima
+  Tela -> Sessao : Atualiza dia_em_foco
+  Tela --> Estudante : Redireciona para calendário geral
+else Estudante alterna visibilidade
+  Estudante -> Tela : Ativa/desativa calendário ou turma
+  Tela -> Sessao : Atualiza preferência de visibilidade
+  Tela --> Estudante : Redireciona para calendário geral
+end
+
+@enduml
